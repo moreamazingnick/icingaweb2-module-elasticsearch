@@ -23,15 +23,20 @@
         <tbody>
         <?php foreach ($events as $event): ?>
             <tr href="<?= $documentsUri->with(array('index' => $event['_index'], 'type' => $event['_type'], 'id' => $event['_id'])) ?>">
-            <?php foreach ($fields as $getter):
-                $column = $getter($event['_source']);
-                $ellipsis = $this->ellipsis($column, 100);
-                if ($column !== $ellipsis): ?>
-                <td title="<?= $this->escape($column) ?>"><?= $this->escape($ellipsis) ?></td>
-                <?php else: ?>
-                <td><?= $this->escape($column) ?></td>
-                <?php endif ?>
-            <?php endforeach ?>
+            <?php
+            foreach ($fields as $getter){
+                try{
+                    $column = $getter($event['_source']);
+                    $ellipsis = $this->ellipsis($column, 100);
+                    if ($column !== $ellipsis) {
+                        echo "<td title=\"{$this->escape($column)}\"> {$this->escape($ellipsis)}</td>";
+                    }else{
+                        echo "<td> {$this->escape($column)}</td>";
+                    }
+                }catch (\Throwable $e){
+                    echo "<td></td>";
+                }
+            }?>
             </tr>
         <?php endforeach ?>
         </tbody>
